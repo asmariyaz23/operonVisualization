@@ -1,4 +1,3 @@
-## python optimizied.py /home/asmariyaz/Desktop/optimized_results_proteobacteria/ /home/asmariyaz/Desktop/phylo_order
 
 import os
 import sys
@@ -14,6 +13,7 @@ from matplotlib.colors import rgb2hex
 import argparse
 import pickleToCSV
 import csv
+import uuid
 
 ## Traverses the genome information directory
 def traverseAll(path):
@@ -28,9 +28,9 @@ def traverseAll(path):
 #    list_lines=[i.strip("\n") for i in file_handle]
 #    return list_lines
 
-#def reading_optFile(file_handle):
-#    list_lines=[i.strip("\n") for i in open(file_handle,'rU').readlines()]
-#    return list_lines
+def reading_optFile(file_handle):
+    list_lines=[i.strip("\n") for i in open(file_handle,'rU').readlines()]
+    return list_lines
 
 
 ## parses the genome information file
@@ -301,42 +301,63 @@ def reading_MappingFile(mappingFile):
         organism.append(Accession_Organism[1])
     return accession, organism
 
-def removeTrailingBackSlashes(dirpath):
-    if dirpath.endswith("/"):
-       cleanedpath = dirpath[:-1]
-    else:
-       cleanedpath = dirpath
-    return cleanedpath
+#def removeTrailingBackSlashes(dirpath):
+#    if dirpath.endswith("/"):
+#       cleanedpath = dirpath[:-1]
+#    else:
+#       cleanedpath = dirpath
+#    return cleanedpath
 
-def arguments():
+def makeSubfolder(output_directory_path, subfolder_name, sessionID):
+    path = output_directory_path + "/" + subfolder_name + "_" + str(sessionID)
+    os.makedirs(path)
+    return path
+
+def chk_output_directory_path(OutputDirectory,sessionID):
+    if not os.path.exists(OutputDirectory + "_" + str(sessionID)):
+        try:
+           os.mkdir(OutputDirectory + "_" + str(sessionID))
+           return True
+        except OSError:
+           print "Unable to create directory:", OutputDirectory
+           sys.exit()
+             
+
+def get_arguments():
     parser = argparse.ArgumentParser()
     parser.add_argument("OperonDataDirectory",action=readable_dir,help="This directory should contain files with gene name, start, stop, strand direction information.")
     parser.add_argument("MappingFile",type=file,help="This file must contain Genbank Accession numbers and its mapping to organism names in order of the newick tree nodes, csv format required.")
     parser.add_argument("NewickTree",help="This file must be a newick formatted tree.")
     parser.add_argument("EventsDict",type=file, help="This file contains all the operons' events and their z-scores.")
-    parser.add_argument("OutputGenomeDiagDirectory",action=readable_dir,help="Output of this program will be stored in the path supplied here. It will make a new directory if path given is valid or it will raise an error")
-    parser.add_argument("CSVOutputDirectory",action=readable_dir,help="matrix files per operon per event are stored in the path supplied here.")
-    parser.add_argument("OutputTreeGDHeat",action=readable_dir,help="Final combined diagrams are stored at this location.")
+    parser.add_argument("OutputDirectory", help="Output of this program will be stored in the path supplied here. It will make a new directory if path given is valid or it will raise an error")
     args = parser.parse_args()
     return args
 
 if __name__ == "__main__":
     all_colors = list(reportlab.lib.colors.getAllNamedColors().items())
-    args = arguments()
-    OutputGenomeDiagDirectory = removeTrailingBackSlashes(args.OutputGenomeDiagDirectory)
-    CSVOutputDirectory        = removeTrailingBackSlashes(args.CSVOutputDirectory)
-    OutputTreeGDHeat          = removeTrailingBackSlashes(args.OutputTreeGDHeat)
-    accession_order,organism_order = reading_MappingFile(args.MappingFile)
-    res = traverseAll(args.OperonDataDirectory)
-    legendData = {}
-    for r in res:
-        root,f = os.path.split(r)
-        listLines = reading_optFile(r)
-        result_dict = listToDict(listLines)
-        changedStrandedness = handle_strandedness(result_dict)
-        idToColorDict_matplotlib = drawGenomeDiag(changedStrandedness,accession_order,f,OutputGenomeDiagDirectory)
-        legendData[ntpath.basename(r.split(".")[0])] = idToColorDict_matplotlib
-    pickleToCSV.generateCombined(args.EventsDict,legendData,accession_order,organism_order,args.NewickTree,CSVOutputDirectory,OutputGenomeDiagDirectory,OutputTreeGDHeat)    
+    args = get_arguments()
+    sessionID = uuid.uuid1()
+    condition = chk_output_directory_path(args.OutputDirectory,sessionID)
+    if condition:
+       outputsession = args.OutputDirectory + "_" + str(sessionID)        
+       OutputGenomeDiagDirectory = makeSubfolder(outputsession,"genome-diagrams",sessionID)
+       OutputCSVDirectory = makeSubfolder(outputsession,"operon-event-matrices",sessionID)
+       OutputTreeGDHeatDirectory = makeSubfolder(outputsession,"tree-gd-heat-diagrams",sessionID)
+       accession_order,organism_order = reading_MappingFile(args.MappingFile)
+       res = traverseAll(args.OperonDataDirectory)
+       legendData = {}
+       print "*****"
+       print "Results can be found in the following directory:", outputsession
+       print "*****"
+       for r in res:
+           root,f = os.path.split(r)
+           listLines = reading_optFile(r)
+           result_dict = listToDict(listLines)
+           changedStrandedness = handle_strandedness(result_dict)
+           idToColorDict_matplotlib = drawGenomeDiag(changedStrandedness,accession_order,f,OutputGenomeDiagDirectory)
+           legendData[ntpath.basename(r.split(".")[0])] = idToColorDict_matplotlib
+       pickleToCSV.generateCombined(args.EventsDict,legendData,accession_order,organism_order,args.NewickTree,OutputCSVDirectory,OutputGenomeDiagDirectory,OutputTreeGDHeatDirectory)   
+        
 
 
 

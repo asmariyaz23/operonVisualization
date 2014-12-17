@@ -164,12 +164,12 @@ def legendDrawing(fig, gridspace4, geneToColorDict,gd,operon):
     return legend_ax    
 
     
-##def traverseAll(path):
-##    res=[]
-##    for root,dirs,files in os.walk(path):
-##        for f in files:
-##            res.append(root+"/"+f)
-##    return res
+def traverseAll(path):
+    res=[]
+    for root,dirs,files in os.walk(path):
+        for f in files:
+            res.append(root+"/"+f)
+    return res
 
 ##def determineDirectory():
 ##    home = expanduser("~")
