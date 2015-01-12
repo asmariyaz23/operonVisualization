@@ -1,6 +1,7 @@
 # operonVisualization
 
 This command should run this program:
+
 python operonVisual.py data/optimized_results_proteobacteria data/mapping.csv data/reorder.nwk 
                        data/event_dict_new.p.events.pik [path to your choice of output directory]
 
