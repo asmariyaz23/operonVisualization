@@ -8,5 +8,7 @@ python operonVisual.py data/optimized_results_proteobacteria data/mapping.csv da
 # Output:
 
 1) CSV files with all the z-scores in each operon's event
+
 2) Directory with genome diagrams alone. 
+
 3) Directory with diagram containing tree, genome diragram and heat map for each operon event.
