@@ -2,8 +2,7 @@
 
 # This command should run generate the required figures:
 
-python operonVisual.py data/optimized_results_proteobacteria data/mapping.csv data/reorder.nwk 
-                       data/event_dict_new.p.events.pik [path to your choice of output directory]
+python operonVisual.py data/optimized_results_proteobacteria data/mapping.csv data/reorder.nwk data/event_dict.p [path to your choice of output directory]
 
 # Output:
 
