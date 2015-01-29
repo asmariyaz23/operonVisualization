@@ -7,7 +7,7 @@ import treeGDHeat
 import itertools
 #import heatmap as HeatTree
 import math
-
+import get_probs_output
 
 #def phylo_orderFunc(phylo_handle):
 #    phylo_order=[i.strip("\n") for i in open(phylo_handle).readlines()]
@@ -136,12 +136,12 @@ def prep_event(event):
 #              ###            ###
 #Implementation for TreeGDHeat###
 #              ###            ###
-def generateCombined(eventDict,legend_data,accession_order,organism_order,tree_path,csvDir,genomeDiagramsDir,combinedDir_path):                
-    operonEvents = cPickle.load(eventDict)
-
-    #geneToColor_pkl_file = open('geneToColor.pkl', 'rb')
-    #legend_data = cPickle.load(geneToColor_pkl_file)
-    #txtnames = getTxtnames(txtnameFile)
+def generateCombined(eventDict,legend_data,accession_order,organism_order,tree_path,csvDir,genomeDiagramsDir,combinedDir_path,tempDir):                
+    eventZScoreFile,eventZScore = get_probs_output.run_main(eventDict, tempDir)
+    operonEvents = cPickle.load(open(eventZScoreFile,'rb'))
+         #geneToColor_pkl_file = open('geneToColor.pkl', 'rb')
+         #legend_data = cPickle.load(geneToColor_pkl_file)
+         #txtnames = getTxtnames(txtnameFile)
     operon_dict=undoing(operonEvents,accession_order)
     i = 0
     full_max = 0

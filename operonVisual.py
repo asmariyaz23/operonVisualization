@@ -328,7 +328,7 @@ def get_arguments():
     parser.add_argument("OperonDataDirectory",action=readable_dir,help="This directory should contain files with gene name, start, stop, strand direction information.")
     parser.add_argument("MappingFile",type=file,help="This file must contain Genbank Accession numbers and its mapping to organism names in order of the newick tree nodes, csv format required.")
     parser.add_argument("NewickTree",help="This file must be a newick formatted tree.")
-    parser.add_argument("EventsDict",type=file, help="This file contains all the operons' events and their z-scores.")
+    parser.add_argument("EventsDict",type=file, help="This file contains all the operons' events and pairwise distances.")
     parser.add_argument("OutputDirectory", help="Output of this program will be stored in the path supplied here. It will make a new directory if path given is valid or it will raise an error")
     args = parser.parse_args()
     return args
@@ -343,6 +343,7 @@ if __name__ == "__main__":
        OutputGenomeDiagDirectory = makeSubfolder(outputsession,"genome-diagrams",sessionID)
        OutputCSVDirectory = makeSubfolder(outputsession,"operon-event-matrices",sessionID)
        OutputTreeGDHeatDirectory = makeSubfolder(outputsession,"tree-gd-heat-diagrams",sessionID)
+       TempDirectory = makeSubfolder(outputsession, "temporary-files",sessionID)
        accession_order,organism_order = reading_MappingFile(args.MappingFile)
        res = traverseAll(args.OperonDataDirectory)
        legendData = {}
@@ -356,7 +357,7 @@ if __name__ == "__main__":
            changedStrandedness = handle_strandedness(result_dict)
            idToColorDict_matplotlib = drawGenomeDiag(changedStrandedness,accession_order,f,OutputGenomeDiagDirectory)
            legendData[ntpath.basename(r.split(".")[0])] = idToColorDict_matplotlib
-       pickleToCSV.generateCombined(args.EventsDict,legendData,accession_order,organism_order,args.NewickTree,OutputCSVDirectory,OutputGenomeDiagDirectory,OutputTreeGDHeatDirectory)   
+       pickleToCSV.generateCombined(args.EventsDict,legendData,accession_order,organism_order,args.NewickTree,OutputCSVDirectory,OutputGenomeDiagDirectory,OutputTreeGDHeatDirectory,TempDirectory)   
         
 
 
