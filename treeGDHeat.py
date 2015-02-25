@@ -198,4 +198,5 @@ def combineAll(max_num, min_num, full_len, txtnames, tree_path, operon, gd_files
     ht_ax = produceHeat(fig,heatmapGS[0,2], max_num, min_num, full_len, txtnames)
     fig.savefig(os.path.join(joined_path,operon+".png"), format = 'png'
                  ,bbox_inches='tight',dpi=120)
+    plt.close(fig)
     return

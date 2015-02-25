@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 
 import os
 import sys
@@ -325,11 +326,11 @@ def chk_output_directory_path(OutputDirectory,sessionID):
 
 def get_arguments():
     parser = argparse.ArgumentParser()
-    parser.add_argument("OperonDataDirectory",action=readable_dir,help="This directory should contain files with gene name, start, stop, strand direction information.")
-    parser.add_argument("MappingFile",type=file,help="This file must contain Genbank Accession numbers and its mapping to organism names in order of the newick tree nodes, csv format required.")
-    parser.add_argument("NewickTree",help="This file must be a newick formatted tree.")
-    parser.add_argument("EventsDict",type=file, help="This file contains all the operons' events and pairwise distances.")
-    parser.add_argument("OutputDirectory", help="Output of this program will be stored in the path supplied here. It will make a new directory if path given is valid or it will raise an error")
+    parser.add_argument("--OperonDataDirectory","-n",action=readable_dir,help="This directory should contain files with gene name, start, stop, strand direction information.")
+    parser.add_argument("--MappingFile","-m",type=file,help="This file must contain Genbank Accession numbers and its mapping to organism names in order of the newick tree nodes, csv format required.")
+    parser.add_argument("--NewickTree","-t",help="This file must be a newick formatted tree.")
+    parser.add_argument("--EventsDict","-e",type=file, help="This file contains all the operons' events and pairwise distances.")
+    parser.add_argument("--OutputDirectory","-o", help="Output of this program will be stored in the path supplied here. It will make a new directory if path given is valid or it will raise an error")
     args = parser.parse_args()
     return args
 
