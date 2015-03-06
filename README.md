@@ -1,8 +1,9 @@
 # operonVisualization
 
-Evolution of gene blocks in proteobacteria can be described by a small set of events: insertions, deletions adn duplications. The figures so generated with thiscode will help understand the evolutionary rate.
+Evolution of gene blocks in proteobacteria can be described by a small set of events: insertions, deletions and duplications. The figures generated will help understand the evolutionary rate.
 
 This program requires the following inputs:
+
 1) Genome block information files.
 
 2) A csv file mapping accession numbers to corresponding organism names.
