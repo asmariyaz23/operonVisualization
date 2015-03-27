@@ -139,9 +139,42 @@ def prep_event(event):
 def generateCombined(eventDict,legend_data,accession_order,organism_order,tree_path,csvDir,genomeDiagramsDir,combinedDir_path,tempDir):                
     eventZScoreFile,eventZScore = get_probs_output.run_main(eventDict, tempDir)
     operonEvents = cPickle.load(open(eventZScoreFile,'rb'))
-         #geneToColor_pkl_file = open('geneToColor.pkl', 'rb')
-         #legend_data = cPickle.load(geneToColor_pkl_file)
-         #txtnames = getTxtnames(txtnameFile)
+    ##operonEvents = cPickle.load(eventDict)
+    operon_dict = undoing(operonEvents,accession_order)
+    i = 0
+    full_max = 0
+    full_min = 0
+    gd_files_list = treeGDHeat.traverseAll(genomeDiagramsDir)
+
+    for operon,event in operon_dict.items():
+        result=convert_str(accession_order, event,i)
+        full_len = prep_event(event)
+        min_num, max_num = minMax(full_len)
+        treeGDHeat.combineAll(max_num, min_num, full_len, organism_order, tree_path, operon, gd_files_list, combinedDir_path,
+legend_data)
+        f=writing_to_file(operon,result,csvDir)
+        i+=1
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+'''
+    eventZScoreFile,eventZScore = get_probs_output.run_main(eventDict, tempDir)
+    operonEvents = cPickle.load(open(eventZScoreFile,'rb'))
     operon_dict=undoing(operonEvents,accession_order)
     i = 0
     full_max = 0
@@ -155,3 +188,4 @@ def generateCombined(eventDict,legend_data,accession_order,organism_order,tree_p
         treeGDHeat.combineAll(max_num, min_num, full_len, organism_order, tree_path, operon, gd_files_list, combinedDir_path, legend_data)
         f=writing_to_file(operon,result,csvDir)
         i+=1
+'''

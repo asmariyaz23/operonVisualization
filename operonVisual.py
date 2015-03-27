@@ -15,6 +15,8 @@ import argparse
 import pickleToCSV
 import csv
 import uuid
+from homolog4 import *
+
 
 ## Traverses the genome information directory
 def traverseAll(path):
@@ -33,32 +35,48 @@ def reading_optFile(file_handle):
     list_lines=[i.strip("\n") for i in open(file_handle,'rU').readlines()]
     return list_lines
 
-
+##
 ## parses the genome information file
-def listToDict(list_lines):
-    result_dict={}
-    for l in list_lines:
-        if l.startswith("NC_"):
-            list_tab=l.split("\t")
-            accession=list_tab[0]
-            geneName=list_tab[4]
-            start=list_tab[10]
-            end=list_tab[11]
-            strand_direction=list_tab[12]
-#            if accession == 'NC_000913' and 'atp' in geneName:
-#               print "Original:" + accession + " " + geneName + " " + start +  " " + end + " " + strand_direction
-#            if accession == 'NC_003047' and 'atp' in geneName:
-#               print "Original:" + accession + " " + geneName + " " + start +  " " + end + " " + strand_direction
-            if result_dict.has_key(accession)==False:
-               result_dict[accession]=[(geneName,start,end,strand_direction)]
+##def listToDict(list_lines):
+##    result_dict={}
+##    for l in list_lines:
+##        if l.startswith("NC_"):
+##            list_tab=l.split("\t")
+##            accession=list_tab[0]
+##            geneName=list_tab[4]
+##            start=list_tab[10]
+##            end=list_tab[11]
+##            strand_direction=list_tab[12]
+##            if result_dict.has_key(accession)==False:
+##               result_dict[accession]=[(geneName,start,end,strand_direction)]
+##            else:
+##               dummy_dict={}
+##               list1=result_dict[accession]
+##               list2=[(geneName,start,end,strand_direction)]
+##               list1.extend(list2)
+##               dummy_dict[accession]=list1
+##               result_dict.update(dummy_dict)         
+##    return result_dict
+##
+
+def gdVisualizationDict(infile):
+    result = {}
+    for line in [i.strip() for i in open(infile).readlines()]:
+            hlog = Homolog.from_blast(line)
+            accession = hlog.accession()
+            start = hlog.start()
+            end = hlog.stop()
+            strand = hlog.strand()
+            gene_name = hlog.blast_annotation()
+            
+            if accession in result.keys():
+                result[accession].append((gene_name, start, end, strand))
             else:
-               dummy_dict={}
-               list1=result_dict[accession]
-               list2=[(geneName,start,end,strand_direction)]
-               list1.extend(list2)
-               dummy_dict[accession]=list1
-               result_dict.update(dummy_dict)         
-    return result_dict
+                result.update({accession:[(gene_name, start, end, strand)]})
+    return result
+
+
+
 
 #
 def allReverseStranded(strand_list):
@@ -265,12 +283,12 @@ def drawGenomeDiag(result_Dict,phylo_order,filename,OutputDirectory):
     return idToColorDict_matplotlib
     
 def findFeature(start,gd_feature_set,idToColorDict_reportLab,geneName,maxPosList,minPosList,maxStrandList,endPos,startPos,strandDirection):
-    if strandDirection == str(1) or strandDirection == '+1':
+    if strandDirection == str(1) or strandDirection == '+1' or strandDirection == 1:
        fz= SeqFeature(FeatureLocation(start,end=start+10,strand=+1))
     elif strandDirection == str(-1) or strandDirection == -1:
        fz= SeqFeature(FeatureLocation(start,end=start+10,strand=-1))
     else:
-       print strandDirection
+       print type(strandDirection)
     gd_feature_set.add_feature(fz,sigil="BIGARROW",color = idToColorDict_reportLab[geneName],
                                label=False,name=geneName,label_position="start")                
     start=start+10
@@ -353,8 +371,9 @@ if __name__ == "__main__":
        print "*****"
        for r in res:
            root,f = os.path.split(r)
-           listLines = reading_optFile(r)
-           result_dict = listToDict(listLines)
+           ##listLines = reading_optFile(r)
+           ##result_dict = listToDict(listLines)
+           result_dict = gdVisualizationDict(r)
            changedStrandedness = handle_strandedness(result_dict)
            idToColorDict_matplotlib = drawGenomeDiag(changedStrandedness,accession_order,f,OutputGenomeDiagDirectory)
            legendData[ntpath.basename(r.split(".")[0])] = idToColorDict_matplotlib
