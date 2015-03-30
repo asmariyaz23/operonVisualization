@@ -134,9 +134,9 @@ def run_main(event_dict,outputDict):
     
 #    all_loop_operons(all_evop)
     all_event_zscore = all_loop_events(all_evop)
-    fo = open(join(outputDict,"event.pik"),"w")
+    fo = open(join(outputDict,"event_new.pik"),"w")
     eventZScore = cPickle.dump(all_event_zscore,fo)
-    eventZScoreFilename = join(outputDict,"event.pik")
+    eventZScoreFilename = join(outputDict,"event_new.pik")
     return eventZScoreFilename,eventZScore                
 
 

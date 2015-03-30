@@ -21,6 +21,7 @@ from matplotlib.ticker import MultipleLocator, FormatStrFormatter, FixedLocator
 import pickle
 from matplotlib.colors import ColorConverter
 from reportlab.lib import colors
+from os.path import split
 
 #defines a red-blue colormap 
 def blueredcmap():
@@ -192,10 +193,13 @@ def combineAll(max_num, min_num, full_len, txtnames, tree_path, operon, gd_files
         ##print "actual_gd:", gd
         ##print "operon:", operon
         ##print "split_gd:", ntpath.basename((gd.split("/")[3]).split(".")[0])
-        ##print "split_operon:", operon.split("_")[0]        
-        if ntpath.basename((gd.split("/")[3]).split(".")[0]) == operon.split("_")[0]:
+        ##print "split_operon:", operon.split("_")[0]
+        head, tail = os.path.split(gd) 
+        operonName = tail.split(".")[0]       
+        if operonName == operon.split("_")[0]:
            ##print pickleDict.keys()
-           geneToColorDict = pickleDict[ntpath.basename((gd.split("/")[3]).split(".")[0])]
+           ##print ntpath.basename((gd.split("/")[3]).split(".")[0])
+           geneToColorDict = pickleDict[operonName]
            gd_ax = imshowGD(fig,heatmapGS[0,1],gd)
            legend_ax = legendDrawing(fig,heatmapGS[1,1],geneToColorDict,gd,operon)
            break

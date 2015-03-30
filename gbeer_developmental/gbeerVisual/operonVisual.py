@@ -377,7 +377,9 @@ if __name__ == "__main__":
            changedStrandedness = handle_strandedness(result_dict)
            idToColorDict_matplotlib = drawGenomeDiag(changedStrandedness,accession_order,f,OutputGenomeDiagDirectory)
            ##print "legend_data",ntpath.basename((r.split("/")[4]).split(".")[0])
-           legendData[ntpath.basename((r.split("/")[4]).split(".")[0])] = idToColorDict_matplotlib
+           
+           operonName =  ntpath.basename(r)
+           legendData[operonName.split(".")[0]] = idToColorDict_matplotlib
        pickleToCSV.generateCombined(args.EventsDict,legendData,accession_order,organism_order,args.NewickTree,OutputCSVDirectory,OutputGenomeDiagDirectory,OutputTreeGDHeatDirectory,TempDirectory)   
         
 
