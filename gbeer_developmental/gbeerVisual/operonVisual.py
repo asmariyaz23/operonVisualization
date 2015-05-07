@@ -232,7 +232,7 @@ def geneToColor(geneList):
     return idToColorDict_reportLab,idToColorDict_matplotlib
 
 # Traverses the parsed file(stored as a Dict) and draws a genome diagram
-def drawGenomeDiag(result_Dict,phylo_order,filename,OutputDirectory):
+def drawGenomeDiag(result_Dict,phylo_order,split_distance,filename,OutputDirectory):
     gd_diagram =GenomeDiagram.Diagram(filename)
     geneList=[]
     maxNoGenes = 0
@@ -269,7 +269,7 @@ def drawGenomeDiag(result_Dict,phylo_order,filename,OutputDirectory):
                      cnt+=2
                   else:
                      diff = startPos - maxPosList[-1]
-                     if abs(diff) < 500 or (maxPosList[-1] - endPos == 0 and minPosList[-1] - startPos == 0):                     
+                     if abs(diff) < split_distance or (maxPosList[-1] - endPos == 0 and minPosList[-1] - startPos == 0):                     
                         start,maxPosList,maxStrandList,minPosList = findFeature(start,gd_feature_set,idToColorDict_reportLab,
                                                                      geneName,maxPosList,minPosList,maxStrandList,endPos,startPos,strandDirection)
                         cnt+=1
@@ -348,6 +348,7 @@ def get_arguments():
     parser.add_argument("--MappingFile","-m",type=file,help="This file must contain Genbank Accession numbers and its mapping to organism names in order of the newick tree nodes, csv format required.")
     parser.add_argument("--NewickTree","-t",help="This file must be a newick formatted tree.")
     parser.add_argument("--EventsDict","-e",type=file, help="This file contains all the operons' events and pairwise distances.")
+    parser.add_argument("--splitDistance","-d", type=int ,default=500,help="Splitting distance")
     parser.add_argument("--OutputDirectory","-o", help="Output of this program will be stored in the path supplied here. It will make a new directory if path given is valid or it will raise an error")
     args = parser.parse_args()
     return args
@@ -365,6 +366,7 @@ if __name__ == "__main__":
        TempDirectory = makeSubfolder(outputsession, "temporary-files",sessionID)
        accession_order,organism_order = reading_MappingFile(args.MappingFile)
        res = traverseAll(args.OperonDataDirectory)
+       split_distance = args.splitDistance
        legendData = {}
        print "*****"
        print "Results can be found in the following directory:", outputsession
@@ -375,7 +377,7 @@ if __name__ == "__main__":
            ##result_dict = listToDict(listLines)
            result_dict = gdVisualizationDict(r)
            changedStrandedness = handle_strandedness(result_dict)
-           idToColorDict_matplotlib = drawGenomeDiag(changedStrandedness,accession_order,f,OutputGenomeDiagDirectory)
+           idToColorDict_matplotlib = drawGenomeDiag(changedStrandedness,accession_order,split_distance,f,OutputGenomeDiagDirectory)
            ##print "legend_data",ntpath.basename((r.split("/")[4]).split(".")[0])
            
            operonName =  ntpath.basename(r)
